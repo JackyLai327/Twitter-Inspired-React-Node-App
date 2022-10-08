@@ -5,9 +5,149 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  margin-left: 20%;
+  margin-right: 20%;
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+.side {
+  position: fixed;
+  top: 5%;
+  right: 2%;
+}
+
+.side-item {
+  top: 20%;
+}
+
+.logo {
+  position: fixed;
+  top: 5%;
+  left: 4%
+}
+
+form {
+  padding-left: 20%;
+  padding-right: 20%;
+}
+
+.search-bar {
+  padding-left: 40%;
+  padding-right: 40%;
+}
+
+.pfp {
+  width: 10em;
+}
+
+.ml--2 {
+  margin-left: -2em;
+}
+
+.warning-pop {
+  position: fixed;
+  border: solid 2px black;
+  top: 0em;
+  left: 0em;
+  bottom: 0em;
+  right: 0em;
+  background-color: rgba(0, 0, 0, 0.883);
+  z-index: 1000;
+}
+
+.user-pfp, .user-pfp-top {
+  border-radius: 50%;
+}
+
+.user-pfp {
+  min-width: 10em;
+  background-color: grey;
+  width: 10em;
+  height: 10em;
+  margin-top: .5em;
+}
+
+.user-pfp-top {
+  width: 3em;
+  height: 3em;
+  background-color: white;
+  margin-left: 3.5em;
+  margin-top: 1.5em;
+}
+
+.user-pfp-btm {
+  width: 5em;
+  height: 5em;
+  background-color: white;
+  margin-left: 2.6em;
+  margin-top: .5em;
+  border-radius: 100% 100% 40% 40%;
+}
+
+.post-editor-container {
+  padding: 0;
+  border:rgb(198, 198, 198) 1px solid;
+  border-radius: 0.25em;
+}
+
+.post-editor-user {
+  padding: 2em;
+  border-radius: .5em .5em 0 0 ;
+}
+
+.post-editor-submit {
+  padding: 0 2em 0 2em;
+  border-radius: 0 0 1em 1em;
+}
+
+.post-editor {
+  resize: none;
+  border: none;
+  border-bottom: 1px solid rgb(210, 210, 210);
+  max-width:90%;
+  min-width:90%;
+  padding: .75em; 
+  margin: 1em 5% 1em 5%;
+}
+
+.input-file {
+	opacity: 0;
+}
+
+.post-container {
+  border: 1px rgb(163, 163, 163) solid;
+  margin-top: 1em;
+  margin-bottom: 1em;
+  border-radius: .5em;
+  padding: 1em 2em 1em 2em;
+}
+
+.post-image {
+  max-width: 24em;
+  margin: 1em 0 .5em 0;
+}
+
+.pop-up {
+  background-color: white;
+  border-radius: 1em;
+}
+
+.post-editing {
+  position: relative;
+}
+
+.comment {
+  gap: .5em;
+  border-bottom: solid rgb(198, 198, 198) 1px;
+  padding: .5em;
+}
+
+.offline-comment {
+  border: 1px rgb(214, 214, 214) solid;
+  border-radius: 1em;
+  padding: 0 1em 0 1em;
 }
