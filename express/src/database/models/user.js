@@ -21,14 +21,12 @@ module.exports = (sequelize, DataTypes) =>
             allowNull: true
         },
         following: {
-            type: DataTypes.ARRAY(DataTypes.STRING(50)),
-            allowNull: false,
-            defaultValue: 0
+            type: DataTypes.TEXT,
+            allowNull: true
         }, 
         followers: {
-            type: DataTypes.ARRAY(DataTypes.STRING(50)),
-            allowNull: false,
-            defaultValue: 0
+            type: DataTypes.TEXT,
+            allowNull: true
         }
     }, { 
         timestamps: true,

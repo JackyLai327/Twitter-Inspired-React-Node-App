@@ -27,4 +27,19 @@ exports.createComment = async (req, res) => {
 };
 
 // Delete Comment
+exports.deleteComment = async (req, res) => {
+    const comment = await db.comment.destroy({
+        where: { comment_id: req.body.commentID }
+    });
+    res.json(comment);
+};
+
 // Update Comment
+exports.updateComment = async (req, res) => {
+    const comment = await db.comment.update({
+        content: req.body.content
+    }, {
+        where: { comment_id: req.body.commentID }
+    });
+    res.json(comment);
+};

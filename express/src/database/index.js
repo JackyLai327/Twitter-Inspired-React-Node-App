@@ -20,7 +20,7 @@ db.comment = require("./models/comment")(db.sequelize, DataTypes);
 // Create Cardinalities among tables
 db.post.belongsTo(db.user, { foreignKey: { name: "username", allowNull: false} });
 db.comment.belongsTo(db.user, { foreignKey: { name: "username", allowNull: false } });
-db.comment.belongsTo(db.post, { foreignKey: { name: "post", allowNull: false }});
+db.comment.belongsTo(db.post, { foreignKey: { name: "postByUser", allowNull: false }});
 
 db.sync = async () => {
     // sync tables
@@ -35,7 +35,7 @@ async function seedData() {     // import seed data into tables
 
     const argon2 = require("argon2");
 
-    let hashedPassword = await argon2.hash("TestPass123123", { type: argon2,argon2id });
+    let hashedPassword = await argon2.hash("TestPass123123", { type:argon2.argon2id });
     await db.user.create({
         username: "jacky@gmail.com",
         hashed_password: hashedPassword,
