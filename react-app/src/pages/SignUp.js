@@ -2,8 +2,9 @@ import { useState } from "react"
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import { initUsers } from "../data/UserData";
+import { findUser, createUser } from "../data/repository";
 
-export default function SignUp() {
+export default function SignUp(props) {
 
     /* 
     states:
@@ -40,13 +41,25 @@ export default function SignUp() {
         validateDetails(name, username, password);
     }
 
-    function validateDetails(name, username, password) {
+    async function validateDetails(name, username, password) {
         /* 
         validate the details based on submission
         param => name, username, password (all string type and plaintext)
         no return
         */
         setErrorMessage("");
+        name = name.trim();
+        const firstName = name.split(" ")[0];
+        const lastName = name.split(" ")[1];
+        username = username.trim();
+        password = password.trim();
+        const fields = {
+            firstName: firstName,
+            lastName: lastName,
+            username: username,
+            password: password
+        }
+
         if ((name !== "") && (username !== "") && (password !== "")) {
             if (/^[a-zA-Z\s]+$/.test(name) === false) {
                 setErrorMessage("Name field only allows English characters and spaces. ");
@@ -54,13 +67,16 @@ export default function SignUp() {
                 setErrorMessage("Please provide a valid email address. ");
             } else if (/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(password) === false) {
                 setErrorMessage("Password should have at least 8 characters containing at least 1 UPPERCASE CHARACTER, 1 LOWERCASE CHARACTER 1 NUMERICAL CHARACTER AND 1 of the SPECIAL CHARACTER: @$!%*?& ");
+            } else if (await findUser(username) !== null) {
+                setErrorMessage("This username is already registered.")
             } else {
-                initUsers(name, username, password);
+                const user = await createUser(fields);
+                props.loginUser(user);
                 localStorage.setItem("onlineStatus", "online");
                 localStorage.setItem("joinedDate", current.getDate() + "/" + (current.getMonth() + 1) + "/" + current.getFullYear());
                 setSuccessMessage("Sign up successfully!");
                 navigate("/writepost");
-                alert("Welcome, " + name );
+                alert("Welcome, " + firstName );
             }
 
         } else {
