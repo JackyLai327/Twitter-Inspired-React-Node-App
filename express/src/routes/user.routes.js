@@ -15,13 +15,13 @@ module.exports = (express, app) => {
     router.post("/", controller.createUser);
 
     // Delete a user
-    router.delete("delete/:username", controller.deleteUser);
+    router.delete("/delete/:username", controller.deleteUser);
 
     // Update a user's first name
-    router.put("/updateFName/:username", controller.updateFirstName);
+    router.put("/updateFName/:username/:firstName", controller.updateFirstName);
 
     // Update a user's last name
-    router.put("/updateLName/:username", controller.updateLastName);
+    router.put("/updateLName/:username/:lastName", controller.updateLastName);
 
     // Update a user's profile picture
     router.put("/updatePFP/:username", controller.updateProfilePicture);

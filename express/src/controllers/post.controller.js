@@ -27,7 +27,7 @@ exports.allPostByUser = async (req, res) => {
 // Delete a post
 exports.deletePost = async (req, res) => {
     const post = await db.post.destroy({
-        where: { post_id: req.body.postID }
+        where: { post_id: req.params.username }
     });
     res.json(post);
 };
@@ -37,7 +37,7 @@ exports.updatePost = async (req, res) => {
     const post = await db.post.update({
         content: req.body.content
     }, {
-        where: { post_id: req.body.postID }
+        where: { post_id: req.body.username }
     });
     res.json(post);
 };

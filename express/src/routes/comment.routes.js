@@ -15,7 +15,7 @@ module.exports = (express, app) => {
     router.delete("/delete/:commentID", controller.deleteComment);
 
     // Update a comment
-    router.post("/update/:commentID", controller.updateComment);
+    router.post("/api/users/updateCommentByUser/:commentID", controller.updateComment);
 
     // Add routes to server
     app.use("api/comments", router)

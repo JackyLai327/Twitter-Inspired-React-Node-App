@@ -12,10 +12,10 @@ module.exports = (express, app) => {
     router.get("/select/:username", controller.allPostByUser);
 
     // Delete a post
-    router.delete("/delete/:postID", controller.deletePost);
+    router.delete("/delete/:username", controller.deletePost);
 
     // Update a post
-    router.post("/update/:postID", controller.updatePost);
+    router.post("/updatePostUser/:username", controller.updatePost);
 
     // Add routes to server
     app.use("/api/posts", router);

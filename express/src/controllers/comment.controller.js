@@ -39,7 +39,7 @@ exports.updateComment = async (req, res) => {
     const comment = await db.comment.update({
         content: req.body.content
     }, {
-        where: { comment_id: req.body.commentID }
+        where: { comment_id: req.body.username }
     });
     res.json(comment);
 };

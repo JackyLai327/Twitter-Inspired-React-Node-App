@@ -3,7 +3,7 @@ const cors = require("cors");
 const db = require("./src/database");
 
 // Synchronise Database
-db.sync()
+db.sync();
 
 const app = express();
 

@@ -13,9 +13,9 @@ db.sequelize = new Sequelize(config.DB, config.USER, config.PASSWORD, {
 });
 
 // Create schema
-db.user = require("./models/user")(db.sequelize, DataTypes);
-db.post = require("./models/post")(db.sequelize, DataTypes);
-db.comment = require("./models/comment")(db.sequelize, DataTypes);
+db.user = require("./models/user.js")(db.sequelize, DataTypes);
+db.post = require("./models/post.js")(db.sequelize, DataTypes);
+db.comment = require("./models/comment.js")(db.sequelize, DataTypes);
 
 // Create Cardinalities among tables
 db.post.belongsTo(db.user, { foreignKey: { name: "username", allowNull: false} });
@@ -27,7 +27,7 @@ db.sync = async () => {
     await db.sequelize.sync();
     // add seed data into tables
     await seedData();
-}
+};
 
 async function seedData() {     // import seed data into tables
     const count = await db.user.count();
@@ -49,6 +49,6 @@ async function seedData() {     // import seed data into tables
         first_name: "AAA",
         last_name: "aaa"
     })
-}
+};
 
 module.exports = db;
