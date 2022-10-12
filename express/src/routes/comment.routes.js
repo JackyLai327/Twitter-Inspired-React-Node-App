@@ -9,14 +9,17 @@ module.exports = (express, app) => {
     router.get("/selectByPostID/:postID", controller.allCommentByPost);
 
     // Create a comment
-    router.post("/", controller.createComment);
+    router.post("/create", controller.createComment);
 
     // Delete a comment
     router.delete("/delete/:commentID", controller.deleteComment);
 
     // Update a comment
-    router.post("/api/users/updateCommentByUser/:commentID", controller.updateComment);
+    router.put("/api/users/updateCommentByUser/:commentID", controller.updateComment);
+
+    // Get all comments
+    router.get("/all", controller.getAllComments);
 
     // Add routes to server
-    app.use("api/comments", router)
+    app.use("/api/comments/", router)
 }

@@ -26,7 +26,7 @@ exports.login = async (req, res) => {
 
 // Create a user
 exports.createUser = async (req, res) => {
-    if (await await db.user.findByPk(req.param.username)) return;
+    if (await db.user.findByPk(req.param.username)) return;
 
     const hashedPassword = await argon2.hash(req.body.password, { type: argon2.argon2id });
     

@@ -24,7 +24,6 @@ exports.allPostByUser = async (req, res) => {
         raw: true,
         include: db.user,
         where: { username: req.params.username}});
-    console.log(posts);
     res.json(posts);
 };
 

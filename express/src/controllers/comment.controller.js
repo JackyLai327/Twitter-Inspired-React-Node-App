@@ -11,18 +11,21 @@ exports.allCommentsByUser = async (req, res) => {
 
 // Select all posts by a user
 exports.allCommentByPost = async (req, res) => {
-    console.log(req);
+    console.log(req.params);
     const comment = await db.comment.findAll({
         raw: true,
-        where: { post_id: req.params.postId }
+        where: { postByUser: req.params.postID }
     });
     res.json(comment);
 };
 
 // Create a comment
 exports.createComment = async (req, res) => {
+    console.log(req.body);
     const comment = await db.comment.create({
-        content: req.body.content
+        content: req.body.content,
+        username: req.body.user.username,
+        postByUser: req.body.post.post_id
     });
     res.json(comment);
 };
@@ -44,3 +47,11 @@ exports.updateComment = async (req, res) => {
     });
     res.json(comment);
 };
+
+// Get All Comments
+exports.getAllComments = async (req, res) => {
+    const comments = await db.comment.findAll({
+        raw: true
+    });
+    res.json(comments);
+}
