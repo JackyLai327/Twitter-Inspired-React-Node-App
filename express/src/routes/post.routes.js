@@ -3,7 +3,7 @@ module.exports = (express, app) => {
     const router = express.Router();
 
     // Select all posts
-    router.get("/", controller.allPosts);
+    router.get("/all", controller.allPosts);
 
     // Create a post
     router.post("/", controller.createPost);
@@ -11,11 +11,14 @@ module.exports = (express, app) => {
     // Select all posts by a username
     router.get("/select/:username", controller.allPostByUser);
 
-    // Delete a post
-    router.delete("/delete/:username", controller.deletePost);
+    // Delete a post by username
+    router.delete("/deletePostByUsername/:username", controller.deletePostByUsername);
+
+    // Delete a post by post ID
+    router.delete("/deletePostByPostID/:postID", controller.deletePostByPostID);
 
     // Update a post
-    router.post("/updatePostUser/:username", controller.updatePost);
+    router.put("/updatePost/:postID/:content/:image", controller.updatePostByPostID);
 
     // Add routes to server
     app.use("/api/posts", router);

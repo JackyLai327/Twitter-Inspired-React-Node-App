@@ -3,10 +3,10 @@ module.exports = (express, app) => {
     const router = express.Router();
 
     // Select all comment by a user
-    router.get("/select/:username", controller.allCommentsByUser);
+    router.get("/selectByUsername/:username", controller.allCommentsByUser);
 
     // Select all comment under a post
-    router.get("/select/:postID", controller.allCommentByPost);
+    router.get("/selectByPostID/:postID", controller.allCommentByPost);
 
     // Create a comment
     router.post("/", controller.createComment);

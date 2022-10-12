@@ -11,9 +11,10 @@ exports.allCommentsByUser = async (req, res) => {
 
 // Select all posts by a user
 exports.allCommentByPost = async (req, res) => {
+    console.log(req);
     const comment = await db.comment.findAll({
-        include: db.post,
-        where: { post_id: req.query.postId }
+        raw: true,
+        where: { post_id: req.params.postId }
     });
     res.json(comment);
 };

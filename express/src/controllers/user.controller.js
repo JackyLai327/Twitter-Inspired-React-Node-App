@@ -10,7 +10,8 @@ exports.allUsers = async (req, res) => {
 
 // Get a user
 exports.getUser = async (req, res) => {
-    const user = await db.user.findByPk(req.param.username);
+    const user = await db.user.findByPk(req.params.username);
+    console.log(req);
     res.json(user ? user : null);
 };
 

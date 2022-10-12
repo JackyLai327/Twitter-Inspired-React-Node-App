@@ -2,13 +2,16 @@ const db = require("../database");
 
 // Select all posts
 exports.allPosts = async (req, res) => {
-    const post = await db.post.findAll();
+    const posts = await db.post.findAll({
+        include: db.user,
+        raw: true});
     res.json(posts);
 };
 
 // Create a post
 exports.createPost = async (req, res) => {
     const post = await db.post.create({
+        username: req.body.username,
         content: req.body.content,
         image: req.body.image
     });
@@ -17,27 +20,39 @@ exports.createPost = async (req, res) => {
 
 // Get all posts from a user
 exports.allPostByUser = async (req, res) => {
-    const post = await db.post.findAll({
+    const posts = await db.post.findAll({
+        raw: true,
         include: db.user,
-        where: { username: req.query.username } 
+        where: { username: req.params.username}});
+    console.log(posts);
+    res.json(posts);
+};
+
+// Delete a post by username
+exports.deletePostByUsername = async (req, res) => {
+    const post = await db.post.destroy({
+        where: { username: req.params.username }
     });
     res.json(post);
 };
 
-// Delete a post
-exports.deletePost = async (req, res) => {
+// Delete a post by post ID
+exports.deletePostByPostID = async (req, res) => {
+    console.log(req.params);
     const post = await db.post.destroy({
-        where: { post_id: req.params.username }
+        where: { post_ID: req.params.postID }
     });
     res.json(post);
-};
+}
 
 // Update a post
-exports.updatePost = async (req, res) => {
+exports.updatePostByPostID = async (req, res) => {
+    console.log(req.params);
     const post = await db.post.update({
-        content: req.body.content
+        content: req.params.content,
+        image: null
     }, {
-        where: { post_id: req.body.username }
+        where: { post_ID: req.params.postID }
     });
     res.json(post);
 };
