@@ -76,6 +76,7 @@ export default function WritePost() {
             handlePosted();
             setPostImage(null);
             handleErrorMessage("");
+            window.location.reload(false);
         } else if (postContent === "") {
             handleErrorMessage("Post cannot be empty.");
         } else if (postContent.length > 250) {

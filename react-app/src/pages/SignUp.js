@@ -67,7 +67,8 @@ export default function SignUp(props) {
             } else if (/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(password) === false) {
                 setErrorMessage("Password should have at least 8 characters containing at least 1 UPPERCASE CHARACTER, 1 LOWERCASE CHARACTER 1 NUMERICAL CHARACTER AND 1 of the SPECIAL CHARACTER: @$!%*?& ");
             } else if (await findUser(username)) {
-                setErrorMessage("This username is already registered.")
+                setErrorMessage("This username is already registered.");
+                console.log("it works!");
             } else {
                 const user = await createUser(fields);
                 props.loginUser(user);
@@ -75,7 +76,6 @@ export default function SignUp(props) {
                 localStorage.setItem("joinedDate", current.getDate() + "/" + (current.getMonth() + 1) + "/" + current.getFullYear());
                 setSuccessMessage("Sign up successfully!");
                 navigate("/writepost");
-                alert("Welcome, " + firstName + "\nduplicate primary key is not fixed");
                 setUser(user);
             }
 
