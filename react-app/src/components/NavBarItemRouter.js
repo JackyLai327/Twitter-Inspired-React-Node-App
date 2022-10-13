@@ -6,7 +6,7 @@ import SignUp from "../pages/SignUp";
 import WritePost from "../pages/WritePost";
 import Footer from "./Footer";
 import NavBarBtn from "./NavBarBtn";
-import { getUser, removeUser } from "../data/repository";
+import { findUser, getUser, removeUser } from "../data/repository";
 import { useState } from "react";
 
 export default function NavBarItemRouter() {

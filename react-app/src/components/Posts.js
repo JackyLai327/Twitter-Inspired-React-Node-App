@@ -1,5 +1,7 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { createPath, useNavigate } from "react-router-dom";
+import { getAllPosts, getPostsByUsername, deletePostByPostID, 
+    updatePostByPostID, createComment, getAllComments, getCommentsByUsername } from "../data/repository";
 import {dataURLtoBlob} from "../data/UserData";
 
 export default function Posts(props) {
@@ -18,7 +20,6 @@ export default function Posts(props) {
         onlineStatus: stores the online status of user
     */
 
-    let feed = [];
     const navigate = useNavigate();
     const [editing, setEditing] = useState(false);
     const [editingPost, setEditingPost] = useState("");
@@ -26,9 +27,29 @@ export default function Posts(props) {
     const [errorMessage, setErrorMessage] = useState("");
     const [characterCount, setCharacterCount] = useState(0);
     const [comment, setComment] = useState("");
-    const currentUser = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : null;
+    let [posts, setPosts] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const currentUser = props.user ? props.user : null;
     const onlineStatus = localStorage.getItem("onlineStatus");
+    let count = 0
+    const [commentsUnderPost, setCommentsUnderPost] = useState([]);
 
+    useEffect(() =>  {
+        async function loadPosts() {
+            const currentPosts = currentUser === null ? await getAllPosts() : await getPostsByUsername(props.user.username);
+            setPosts(currentPosts);
+            setIsLoading(false);
+        }
+        loadPosts();
+        
+        async function loadComments(postID) {
+            const currentComments = await getAllComments();
+            setCommentsUnderPost(currentComments);
+            setIsLoading(false);
+        }
+        loadComments();
+    }, [currentUser !== null ? currentUser.username : "", props.user, count]);
+    
 
     function handleEditing() {
         setEditing(!editing);
@@ -43,31 +64,14 @@ export default function Posts(props) {
         setComment(e.target.value);
     }
 
-    const convertTimestamp = (timestamp) => {
-        /* 
-        convert time stamp into date-time string
-        param => timestamp
-        return date-time string
-         */
-        return new Intl.DateTimeFormat('en-GB', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit', 
-            hour: '2-digit', 
-            minute: '2-digit', 
-            }).format(timestamp);
-    }
-
-    const deletePost = (posts, post) => {
+    const deletePost = async (posts, post) => {
         /* 
         find the position of a post in all posts and delete it
         param => all posts (json object), deleting post (json object)
         no return, update database
         */
-        const index = posts.indexOf(post);
-        posts.splice(index, index+1);
-        localStorage.setItem("posts", JSON.stringify(posts));
-        navigate("../writepost");
+        await deletePostByPostID(post.post_id);
+        window.location.reload(false);
     }
 
     const editPost = (posts, post) => {
@@ -76,9 +80,10 @@ export default function Posts(props) {
         param => all posts (json), editing post (json)
         return => the post that is after edited
         */
+        console.log(post);
         setEditing(true);
         setEditingPost(post.content);
-        return posts.indexOf(post);
+        return post;
     }
 
     const updatePost = (posts, post) => {
@@ -88,9 +93,8 @@ export default function Posts(props) {
         no return, update database
         */
         if (newContent !== "" && newContent.length <= 250) {
-            const index = posts.indexOf(post);
-            posts[index].content = newContent;
-            localStorage.setItem("posts", JSON.stringify(posts));
+            post.content = newContent;
+            updatePostByPostID(post);
             setNewContent("");
             handleEditing();
             setErrorMessage("");
@@ -108,109 +112,110 @@ export default function Posts(props) {
         no return, update database
         */
         if (comment !== "") {
-            const commentData = {
+            const postComment = {
                 user: currentUser, 
-                comment: comment
+                content: comment,
+                post: post
             };
-            if (post.comments) {
-                post.comments.unshift(commentData);
-            } else {
-                post.comments = [];
-                post.comments.unshift(commentData);
-            }
-            localStorage.setItem("posts", JSON.stringify(posts));
+            createComment(postComment);
             setComment("");
-        }
-    }
-
-    if (localStorage.getItem("posts")) {
-        const postDatas = JSON.parse(localStorage.getItem("posts"));
-        let index = 0;
-        
-        for (const postData of postDatas) {
-            
-            // store all posts from database into json objects for easy access
-            let post = {
-                id: index,
-                user: postData.user,
-                content: postData.content,
-                timestamp: postData.timestamp,
-                comment: postData.comments
-            };
-
-            // create image based on stored BLOB type data
-            const image = dataURLtoBlob(postData.image) !== null ? URL.createObjectURL(dataURLtoBlob(postData.image)) : "";
-
-            // add all these HTML into feed array
-            feed.push(
-
-                <div className="post-container" key={post.id}>
-                    <div className="d-flex justify-content-between">
-                        <div className="h4 post-user">{post.user.name}</div>
-                        <div className={editing || (currentUser ? (currentUser.username !== post.user.username) : {}) ? "collapse" : ""}>
-                            <button className="btn" onClick={() => editPost(postDatas, postData)}>Edit post</button>
-                            <span>|</span>
-                            <button className="btn" onClick={() => deletePost(postDatas, postData)}>Delete post</button>
-                        </div>
-                    </div>
-                    <div className={editing ? "post-editing" : "collapse"}>
-                        <div className="text-center pt-3 h5">Editing your post...</div>
-                        <textarea className="post-editor" placeholder={editingPost} onChange={handleNewContent} ></textarea>
-                        <p className="text-end text-secondary mx-4">{characterCount}/250</p>
-                        <br></br>
-                        <p className={errorMessage !== "" ? "text-danger mx-4" : "collapse"} >{errorMessage}</p>
-                        <button className="btn mx-4 mb-3 btn-dark" onClick={() => updatePost(postDatas, postData)}>Submit</button>
-                        <button className="btn btn-secondary mb-3" onClick={handleEditing}>Cancel</button>
-                    </div>
-
-
-                    <div className={editing ? "collapse" : "justify-content-between"}>
-                        <div>
-                            <div className={"post-content mt-3"}>
-                                {post.content}
-                            </div>
-                        </div>
-                        <img src={image} alt="lol" className={image !== "" ? "img-fluid post-image" : "collapse"}></img>
-                    </div>
-                    
-                    <div className="post-timestamp text-secondary text-end mt-3">
-                        posted on {convertTimestamp(post.timestamp)}
-                    </div>
-
-                    <hr></hr>
-
-                    <div className={onlineStatus === "online" ? "d-flex py-3" : "collapse"}>
-                        <input placeholder="Leave a comment..." type="text" className="form-control" onChange={handleComment} />
-                        <button className="btn" onClick={() => postComment(postDatas, postData)}>Send</button>
-                    </div>
-
-                    <div className={onlineStatus === "online" ? "collapse" : ""}>
-                        <div className="offline-comment text-secondary">Log in to leave a comment 💬 </div>
-                    </div>
-
-                    <div>
-                        { postData.comments ? 
-                            postData.comments.map(comment => {
-                                return (
-                                    <div className="d-flex comment" key={postData.comments.indexOf(comment)}>
-                                        <div>{comment.user.name}:</div>
-                                        <div>{comment.comment}</div>
-                                    </div>
-                                )
-                            }) : ""
-                        }
-                    </div>
-                </div>
-
-            );
-            index += 1;
         }
     }
 
     return (
         <>
             <div className="text-center h3">{props.top}</div>
-            {feed} {/* display the whole array that has all posts */}
+            <div>
+                {isLoading ?
+                <div className="d-6">Loading posts...</div>
+                :
+                posts.length === 0 ?
+                    <p className="text-secondary text-center">It's dead silence here... Write something!</p>
+                    :
+                    posts.slice(0).reverse().map((postData) => {
+                        let comments = [];
+                        commentsUnderPost.map(comment => {
+                            if (comment.postByUser === postData.post_id) {
+                                comments.unshift(comment);
+                            }
+                        })
+                        let post = {
+                            id: postData.post_id,
+                            user: {
+                                name: postData["user.first_name"] + " " + postData["user.last_name"],
+                                username: postData.username,
+                                profile_picture: postData["user.profile_picture"]
+                            },
+                            content: postData.content,
+                            timestamp: postData.updated_timestamp.substring(0, 10) + ", " + postData.updated_timestamp.substring(11, 19),
+                            comments: comments
+                        };
+                        const image = dataURLtoBlob(postData.image) !== null ? URL.createObjectURL(dataURLtoBlob(postData.image)) : "";
+                        
+                        return (
+
+                            <div className="post-container" key={post.id}>
+                            <div className="d-flex justify-content-between">
+                                <div className="h4 post-user">{post.user.name}</div>
+                                <div className={editing || (localStorage.getItem("user") ? (JSON.parse(localStorage.getItem("user")).username !== post.user.username) : {}) ? "collapse" : ""}>
+                                    <button className="btn" onClick={() => editPost(posts, postData)}>Edit post</button>
+                                    <span>|</span>
+                                    <button className="btn" onClick={() => deletePost(posts, postData)}>Delete post</button>
+                                </div>
+                            </div>
+                            <div className={editing ? "post-editing" : "collapse"}>
+                                <div className="text-center pt-3 h5">Editing your post...</div>
+                                <textarea className="post-editor" placeholder={editingPost} onChange={handleNewContent} ></textarea>
+                                <p className="text-end text-secondary mx-4">{characterCount}/250</p>
+                                <br></br>
+                                <p className={errorMessage !== "" ? "text-danger mx-4" : "collapse"} >{errorMessage}</p>
+                                <button className="btn mx-4 mb-3 btn-dark" onClick={() => updatePost(posts, postData)}>Submit</button>
+                                <button className="btn btn-secondary mb-3" onClick={handleEditing}>Cancel</button>
+                            </div>
+
+
+                            <div className={editing ? "collapse" : "justify-content-between"}>
+                                <div>
+                                    <div className={"post-content mt-3"}>
+                                        {post.content}
+                                    </div>
+                                </div>
+                                <img src={image} alt="lol" className={image !== "" ? "img-fluid post-image" : "collapse"}></img>
+                            </div>
+                            
+                            <div className="post-timestamp text-secondary text-end mt-3">
+                                posted on {post.timestamp}
+                            </div>
+
+                            <hr></hr>
+
+                            <div className={onlineStatus === "online" ? "d-flex py-3" : "collapse"}>
+                                <input placeholder="Leave a comment..." type="text" className="form-control" onChange={handleComment} />
+                                <button className="btn" onClick={() => postComment(posts, postData)}>Send</button>
+                            </div>
+
+                            <div className={onlineStatus === "online" ? "collapse" : ""}>
+                                <div className="offline-comment text-secondary">Log in to leave a comment 💬 </div>
+                            </div>
+
+                            <div>
+                                { 
+                                    post.comments.map(comment => {
+                                        console.log(comment);
+                                        return (
+                                            <div className="d-flex comment" key={comment.comment_id}>
+                                                <div>{comment.username}:</div>
+                                                <div>{comment.content}</div>
+                                            </div>
+                                        )
+                                    })
+                                }
+                            </div>
+                        </div>
+                    )
+                    })
+                }
+                </div>
             <div className="text-center text-secondary">You've reached the end.</div>
         </>
     )

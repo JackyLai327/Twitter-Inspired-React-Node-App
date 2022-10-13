@@ -1,9 +1,12 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
-import {getUsers, setUser, signOut} from "../data/UserData";
+import { deleteUser, removeUser, 
+    setUser, updateUserFirstName, 
+    updateUserLastName,
+    deletePostByUsername} from "../data/repository";
 
-export default function Profile() {
+export default function Profile(props) {
 
     /* 
     states: 
@@ -15,7 +18,7 @@ export default function Profile() {
     const [editing, setEditing] = useState(false);
     const [newName, setNewName] = useState("");
     const [deleteWarning, setDeleteWarning] = useState(false);
-    const currentUser = JSON.parse(localStorage.getItem("user"));
+    const currentUser = props.user;
 
     const handleEditing = () => {
         setEditing(!editing);
@@ -35,64 +38,25 @@ export default function Profile() {
         param => none
         no return, update the database (local storage on key "users", "posts")
         */
-        let users = getUsers();
-        let posts = localStorage.getItem("posts") ? JSON.parse(localStorage.getItem("posts")) : null;
-        for (const user of users) {
-            if (posts) {
-                for (const post of posts){
-                    if (post.user.username === currentUser.username) {
-                        post.user.name = newName;
-                    }
-
-                    if (post.comments) {
-                        const comments = post.comments;
-                        for (const comment of comments) {
-                            if (comment.user.username === currentUser.username) {
-                                console.log(comment);
-                                comment.user.name = newName;
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (user.username === JSON.parse(localStorage.getItem("user")).username) {
-                user.name = newName;
-            }
-        }
-        localStorage.setItem("posts", JSON.stringify(posts));
-        localStorage.setItem("users", JSON.stringify(users));
+        currentUser.first_name = newName.length > 1 ? newName.split(" ")[0] : newName;
+        currentUser.last_name = newName.length > 1 ? newName.split(" ")[1] : newName;
+        console.log(currentUser);
+        setUser(currentUser);
+        updateUserFirstName(currentUser);
+        updateUserLastName(currentUser);
         setEditing(false);
-        setUser(currentUser.username);
     }
 
-    const deleteUser = () => {
+    const deleteThisUser = () => {
         /* 
         allow user to delete a profile
         param => none
         no return, update the database (local storage on key "users", "posts")
         */
-        let newUsers = [];
-        let users = getUsers();
-        let posts = JSON.parse(localStorage.getItem("posts"));
-        for (const user of users) {
-            if (user["username"] !== JSON.parse(localStorage.getItem("user"))["username"]) {
-                newUsers.push(user);
-            }
-            localStorage.setItem("users", JSON.stringify(newUsers));
-        }
-        for (const post of posts) {
-            let newPosts = [];
-            if (localStorage.getItem("user") !== JSON.stringify(post.user)) {
-                newPosts.push(post);
-            }
-            localStorage.setItem("posts", JSON.stringify(newPosts));
-        }
-        signOut();
-        localStorage.setItem("name", "");
-        localStorage.setItem("username", "");
-        localStorage.setItem("password", "");
-        localStorage.setItem("joinedDate", "");
+        deleteUser(currentUser.username);
+        deletePostByUsername(currentUser.username);
+        removeUser();
+        localStorage.setItem("onlineStatus", "offline");
         alert("Logged out successfully.");
         navigate("../");
     }
@@ -110,7 +74,7 @@ export default function Profile() {
                 </div>
 
                 <div className="d-flex flex-column">
-                    <div className={editing === false ? "h4" : "collapse"}>{currentUser.name}</div>
+                    <div className={editing === false ? "h4" : "collapse"}>{currentUser.first_name + " " + currentUser.last_name}</div>
                     <div className={editing === false ? "h4" : "collapse"}>{currentUser.username}</div>
                     <div className={editing === true ? "h4 p-3" : "collapse"}>Editing your name...</div>
                     <div className={editing === false ? "" : "collapse"}>
@@ -128,14 +92,14 @@ export default function Profile() {
                             <div className="text-center text-light display-5 p-5">Are you sure you want to delete your account?</div>
                             <div className="text-center text-light display-6 pb-5">This action cannot be undone.</div>
                             <div className="d-flex justify-content-around">
-                                <button className="form-control mx-5 p-3 btn btn-danger" onClick={deleteUser}>Delete</button>
+                                <button className="form-control mx-5 p-3 btn btn-danger" onClick={deleteThisUser}>Delete</button>
                                 <button className="form-control mx-5 p-3 btn btn-secondary" onClick={handleDeleteWarning}>Cancel</button>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div className="h4 pt-4 text-secondary">Joined date: {localStorage.getItem("joinedDate")}</div>
+            <div className="h4 pt-4 text-secondary">Joined date: {currentUser.joined_timestamp.substring(0, 10)}</div>
         </>
     )
 }

@@ -1,8 +1,7 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
-import { signIn, setUser } from "../data/UserData";
-import { verifyUser } from "../data/repository";
+import { setUser, verifyUser } from "../data/repository";
 
 export default function SignIn(props) {
 
@@ -19,7 +18,7 @@ export default function SignIn(props) {
     const navigate = useNavigate();
     const [errorMessage, setErrorMessage] = useState("");
     const [successMessage, setSuccessMessage] = useState("");
-    const onlineStatus = localStorage.getItem("onlineStatus");
+    const onlineStatus = !localStorage.getItem("onlineStatus") ? localStorage.setItem("onlineStatus", "offline") : localStorage.getItem("onlineStatus");
     const [online, setOnline] = useState(false);
 
     function handleUsername(e) {
@@ -32,6 +31,7 @@ export default function SignIn(props) {
 
     function handleOnline() {
         setOnline(!online);
+        localStorage.setItem("onlineStatus", "online");
     }
 
     async function onSubmit(e) {
@@ -55,7 +55,7 @@ export default function SignIn(props) {
         setSuccessMessage("Welcome, " + localStorage.getItem("name") + "!");
         handleOnline();
         navigate("/writepost");
-        alert("Welcome!");
+        setUser(user);
     }
 
     return (

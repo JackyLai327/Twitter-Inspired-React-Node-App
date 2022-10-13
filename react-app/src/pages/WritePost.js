@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Header from "../components/Header";
 import Posts from "../components/Posts";
-import {createPost} from "../data/UserData";
+import {createPost} from "../data/repository";
 
 export default function WritePost() {
 
@@ -26,6 +26,7 @@ export default function WritePost() {
     }
 
     const handlePostImage = (e) => {
+        e.preventDefault();
         setPostImage(e.target.files[0]);
     }
 
@@ -49,10 +50,31 @@ export default function WritePost() {
         e.preventDefault();
         handleErrorMessage("loading...");
         if (postContent !== "" && postContent.length <= 250) {
-            createPost(postContent, postImage);
+            if (postImage !== null) {
+                let reader = new FileReader();
+                reader.readAsDataURL(postImage);
+                reader.onload = function() {
+                    const post = {
+                        username: user.username,
+                        content: postContent,
+                        image: reader.result.toString()
+                    }
+                    console.log(reader.result.toString());
+                    createPost(post);
+                };
+                reader.onerror = function() {
+                    console.log(reader.error);
+                };
+            } else {
+                const post = {
+                    username: user.username,
+                    content: postContent,
+                    image: null
+                }
+                createPost(post);
+            }
             handlePosted();
             setPostImage(null);
-            alert("Post is published!");
             handleErrorMessage("");
         } else if (postContent === "") {
             handleErrorMessage("Post cannot be empty.");
@@ -69,15 +91,15 @@ export default function WritePost() {
             />
 
             <form className="post-editor-container" onSubmit={uploadPost}>
-                <div className="post-editor-user h5">{user.name}</div>
+                <div className="post-editor-user h5">{user.first_name + ' ' + user.last_name}</div>
                 
                 <textarea className="post-editor" type="textarea" placeholder="Share your thoughts..." onChange={handlePostContent} value={posted ? "" : postContent}></textarea>
                 <p className="text-end mx-5 text-secondary">{characterCount}/250 characters</p>
 
                 <div className="post-editor-image mx-5 mb-4">
-                    <label className="mb-2">Upload an image (optional)</label> <br></br>
-                    <label htmlFor="image" className="btn border-dark me-3">choose</label>
-                    <input id="image" type="file" accept="image/*" onChange={handlePostImage} className={"collapse"} />
+                    <label className="mb-2">Upload an image (Under Construction... 🦺)</label> <br></br>
+                    <label htmlFor="image" className="btn border-dark me-3 disabled">choose</label>
+                    <input id="image" type="file" accept="image/*" onChange={handlePostImage} className={"collapse"}/>
                     <img src={postImage === null || postImage === undefined ? "" : URL.createObjectURL(postImage)} alt="post pic" className={postImage === null || postImage === undefined ? "collapse" : "img-fluid post-image"}></img>
                 </div>
                 
@@ -89,7 +111,7 @@ export default function WritePost() {
 
             <hr></hr>
 
-            <Posts top="All Posts" user={user} />
+            <Posts top="Your Posts" user={user} />
         </>
     )
 }

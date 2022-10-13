@@ -1,8 +1,7 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
-import { initUsers } from "../data/UserData";
-import { findUser, createUser } from "../data/repository";
+import { findUser, createUser, setUser } from "../data/repository";
 
 export default function SignUp(props) {
 
@@ -49,8 +48,8 @@ export default function SignUp(props) {
         */
         setErrorMessage("");
         name = name.trim();
-        const firstName = name.split(" ")[0];
-        const lastName = name.split(" ")[1];
+        const firstName = name.split(" ").length > 1 ? name.split(" ")[0] : "User";
+        const lastName = name.split(" ").length > 1 ? name.split(" ")[1] : name;
         username = username.trim();
         password = password.trim();
         const fields = {
@@ -67,7 +66,7 @@ export default function SignUp(props) {
                 setErrorMessage("Please provide a valid email address. ");
             } else if (/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(password) === false) {
                 setErrorMessage("Password should have at least 8 characters containing at least 1 UPPERCASE CHARACTER, 1 LOWERCASE CHARACTER 1 NUMERICAL CHARACTER AND 1 of the SPECIAL CHARACTER: @$!%*?& ");
-            } else if (await findUser(username) !== null) {
+            } else if (await findUser(username)) {
                 setErrorMessage("This username is already registered.")
             } else {
                 const user = await createUser(fields);
@@ -76,7 +75,8 @@ export default function SignUp(props) {
                 localStorage.setItem("joinedDate", current.getDate() + "/" + (current.getMonth() + 1) + "/" + current.getFullYear());
                 setSuccessMessage("Sign up successfully!");
                 navigate("/writepost");
-                alert("Welcome, " + firstName );
+                alert("Welcome, " + firstName + "\nduplicate primary key is not fixed");
+                setUser(user);
             }
 
         } else {

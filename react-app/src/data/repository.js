@@ -1,6 +1,7 @@
 import axios from "axios";
+import e from "cors";
 
-const API_HOST = "http://localhost:4000";
+const API_HOST = "http://localhost:4000/";
 const USER_KEY = "user";
 
 async function verifyUser(username, password) {
@@ -22,32 +23,33 @@ async function findUser(username) {
 }
 
 async function createUser(user) {
-    const response = await axios.post(API_HOST + "/api/users", user);
+    const response = await axios.post(API_HOST + "api/users", user);
     return response.data;
 }
 
 async function findAllUsers() {
-    const response = await axios.get(API_HOST + "/api/users/")
+    const response = await axios.get(API_HOST + "api/users/");
+    console.log(response.data);
     return response.data;
 }
 
 async function deleteUser(username) {
-    const response = await axios.delete(API_HOST + `/api/users/${username}`);
+    const response = await axios.delete(API_HOST + `api/users/delete/${username}`);
     return response.data;
 }
 
-async function updateUserFistName(username) {
-    const response = await axios.put(API_HOST + `/api/users/updateFName/${username}`);
+async function updateUserFirstName(user) {
+    const response = await axios.put(API_HOST + `api/users/updateFName/${user.username}/${user.first_name}`);
     return response.data;
 }
 
-async function updateUserLastName(username) {
-    const response = await axios.put(API_HOST + `/api/users/updateLName/${username}`);
+async function updateUserLastName(user) {
+    const response = await axios.put(API_HOST + `api/users/updateLName/${user.username}/${user.last_name}`);
     return response.data;
 }
 
-async function updateUserProfilePicture(username) {
-    const response = await axios.put(API_HOST + `/api/users/updatePFP/${username}`);
+async function updateUserProfilePicture(user) {
+    const response = await axios.put(API_HOST + `api/users/updatePFP/${user.username}`);
     return response.data;
 }
 
@@ -62,42 +64,54 @@ async function unfollowUser(username, unfollowUsername) {
 // Post methods
 
 async function getAllPosts() {
-    const response = await axios.get(API_HOST + "/api/posts");
+    const response = await axios.get(API_HOST + "api/posts/all");
     return response.data;
 }
 
 async function createPost(post) {
-    const response = await axios.post(API_HOST + "/api/posts", post);
+    const response = await axios.post(API_HOST + "api/posts", post);
     return response.data;
 }
 
 async function getPostsByUsername(username) {
-    const response = await axios.get(API_HOST + `/api/posts/select/${username}`);
+    const response = await axios.get(API_HOST + `api/posts/select/${username}`);
     return response.data;
 }
 
-async function deletePost() {
-    return
+async function deletePostByUsername(username) {
+    const response = await axios.delete(API_HOST + `api/posts/deletePostByUsername/${username}`)
+    return response.data;
 }
 
-async function updatePost() {
-    return
+async function deletePostByPostID(postID) {
+    const response = await axios.delete(API_HOST + `api/posts/deletePostByPostID/${postID}`);
+    return response.data;
+}
+
+async function updatePostByPostID(post) {
+    const response = await axios.put(API_HOST + `api/posts/updatePost/${post.post_id}/${post.content}/${post.image}`);
+    return response.data;
 }
 
 // Comment methods
 
 async function getCommentsByUsername(username) {
-    const response = await axios.get(API_HOST + `/api/comments/${username}`);
+    const response = await axios.get(API_HOST + `api/comments/selectByUsername/${username}`);
     return response.data;
 }
 
 async function getCommentsByPostID(postID) {
-    const response = await axios.get(API_HOST + `/api/comments/${postID}`);
+    const response = await axios.get(API_HOST + `api/comments/selectByPostID/${postID}`);
     return response.data;
 }
 
 async function createComment(comment) {
-    const response = await axios.post(API_HOST + "api/comments", comment);
+    const response = await axios.post(API_HOST + "api/comments/create", comment);
+    return response.data;
+}
+
+async function getAllComments() {
+    const response = await axios.get(API_HOST + "api/comments/all");
     return response.data;
 }
 
@@ -105,8 +119,9 @@ async function deleteComment(comment) {
     return
 }
 
-async function updateComment(comment) {
-    return
+async function updateComment(user) {
+    const response = await axios.put(API_HOST + `api/users/updateCommentByUser/${user.username}`);
+    return response.data;
 }
 
 // Helper Functions
@@ -125,9 +140,9 @@ function removeUser() {
 
 export {
     verifyUser, findUser, createUser, findAllUsers,
-    deleteUser, getAllPosts, createPost, updateUserFistName,
-    getPostsByUsername, deletePost, updatePost, getCommentsByUsername, 
+    deleteUser, getAllPosts, createPost, updateUserFirstName,
+    getPostsByUsername, deletePostByUsername, updatePostByPostID, getCommentsByUsername, 
     getCommentsByPostID, createComment, deleteComment,
     updateComment, setUser, getUser, removeUser, followUser, unfollowUser,
-    updateUserLastName, updateUserProfilePicture
+    updateUserLastName, updateUserProfilePicture, deletePostByPostID, getAllComments
 }
