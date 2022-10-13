@@ -2,6 +2,7 @@ import { useState } from "react";
 import Header from "../components/Header";
 import Posts from "../components/Posts";
 import {createPost} from "../data/repository";
+import ReactQuill from "react-quill";
 
 export default function WritePost() {
 
@@ -21,8 +22,8 @@ export default function WritePost() {
     const [characterCount, setCharacterCount] = useState(0);
 
     const handlePostContent = (e) => {
-        setPostContent(e.target.value);
-        setCharacterCount(e.target.value.length)
+        setPostContent(e);
+        setCharacterCount(e.replace(/(<([^>]+)>)/ig, '').length);
     }
 
     const handlePostImage = (e) => {
@@ -77,8 +78,9 @@ export default function WritePost() {
             setPostImage(null);
             handleErrorMessage("");
             window.location.reload(false);
-        } else if (postContent === "") {
-            handleErrorMessage("Post cannot be empty.");
+        } else if(postContent.replace(/<(.|\n)*?>/g, "").trim().length === 0) {
+            setErrorMessage("A post cannot be empty.");
+            return;
         } else if (postContent.length > 250) {
             handleErrorMessage("Post cannot have more than 250 characters.");
         }
@@ -90,12 +92,13 @@ export default function WritePost() {
                 headline="Create a post"
                 description1="Share your day with your colleagues and interact with them!"
             />
-
+            
             <form className="post-editor-container" onSubmit={uploadPost}>
                 <div className="post-editor-user h5">{user.first_name + ' ' + user.last_name}</div>
-                
-                <textarea className="post-editor" type="textarea" placeholder="Share your thoughts..." onChange={handlePostContent} value={posted ? "" : postContent}></textarea>
-                <p className="text-end mx-5 text-secondary">{characterCount}/250 characters</p>
+                <br></br>
+                <ReactQuill theme="snow" value={posted ? "" : postContent} onChange={handlePostContent} style={{ height: "180px" }} className="mb-3 mx-3" type="textarea" placeholder="Share your thoughts..." />
+                <br></br>
+                <p className="text-end mx-5 text-secondary py-3">{characterCount}/250 characters</p>
 
                 <div className="post-editor-image mx-5 mb-4">
                     <label className="mb-2">Upload an image (Under Construction... 🦺)</label> <br></br>

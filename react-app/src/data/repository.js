@@ -89,7 +89,7 @@ async function deletePostByPostID(postID) {
 }
 
 async function updatePostByPostID(post) {
-    const response = await axios.put(API_HOST + `api/posts/updatePost/${post.post_id}/${post.content}/${post.image}`);
+    const response = await axios.put(API_HOST + `api/posts/updatePost/${post.post_id}/${post.image}/${post.content}`);
     return response.data;
 }
 

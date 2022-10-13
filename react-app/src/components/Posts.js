@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { createPath, useNavigate } from "react-router-dom";
 import { getAllPosts, getPostsByUsername, deletePostByPostID, 
-    updatePostByPostID, createComment, getAllComments, getCommentsByUsername } from "../data/repository";
+    updatePostByPostID, createComment, getAllComments } from "../data/repository";
 import {dataURLtoBlob} from "../data/UserData";
+import ReactQuill from "react-quill";
 
 export default function Posts(props) {
 
@@ -20,7 +20,6 @@ export default function Posts(props) {
         onlineStatus: stores the online status of user
     */
 
-    const navigate = useNavigate();
     const [editing, setEditing] = useState(false);
     const [editingPost, setEditingPost] = useState("");
     const [newContent, setNewContent] = useState("");
@@ -56,8 +55,8 @@ export default function Posts(props) {
     }
 
     function handleNewContent(e) {
-        setNewContent(e.target.value);
-        setCharacterCount(e.target.value.length);
+        setNewContent(e);
+        setCharacterCount(e.replace(/(<([^>]+)>)/ig, '').length);
     }
 
     function handleComment(e) {
@@ -93,16 +92,17 @@ export default function Posts(props) {
         no return, update database
         */
         if (newContent !== "" && newContent.length <= 250) {
-            post.content = newContent;
+            post.content = newContent.replace("/", "%2F").replace(".", "%2E");
+            console.log(post);
             updatePostByPostID(post);
-            setNewContent("");
-            handleEditing();
-            setErrorMessage("");
-        } else if (newContent === "") {
-            setErrorMessage("Post cannot be empty.")
+        } else if(newContent.replace(/<(.|\n)*?>/g, "").trim().length === 0) {
+            setErrorMessage("A post cannot be empty.");
+            return;
         } else if (newContent.length > 250) {
             setErrorMessage("Post cannot have more than 250 characters.")
         }
+        handleEditing();
+        setErrorMessage("");
     }
 
     const postComment = (posts, post) => {
@@ -151,7 +151,7 @@ export default function Posts(props) {
                             comments: comments
                         };
                         const image = dataURLtoBlob(postData.image) !== null ? URL.createObjectURL(dataURLtoBlob(postData.image)) : "";
-                        
+
                         return (
 
                             <div className="post-container" key={post.id}>
@@ -165,7 +165,7 @@ export default function Posts(props) {
                             </div>
                             <div className={editing ? "post-editing" : "collapse"}>
                                 <div className="text-center pt-3 h5">Editing your post...</div>
-                                <textarea className="post-editor" placeholder={editingPost} onChange={handleNewContent} ></textarea>
+                                <ReactQuill theme="snow" value={newContent} onChange={handleNewContent} style={{ height: "180px" }} className="mb-3 mx-3" placeholder={editingPost.replace(/(<([^>]+)>)/ig, '')} preserveWhitespace />
                                 <p className="text-end text-secondary mx-4">{characterCount}/250</p>
                                 <br></br>
                                 <p className={errorMessage !== "" ? "text-danger mx-4" : "collapse"} >{errorMessage}</p>
@@ -176,9 +176,7 @@ export default function Posts(props) {
 
                             <div className={editing ? "collapse" : "justify-content-between"}>
                                 <div>
-                                    <div className={"post-content mt-3"}>
-                                        {post.content}
-                                    </div>
+                                    <div className={"post-content mt-3"} dangerouslySetInnerHTML={{ __html: post.content.replace("%2F", "/").replace("%2E", ".") }}></div>
                                 </div>
                                 <img src={image} alt="lol" className={image !== "" ? "img-fluid post-image" : "collapse"}></img>
                             </div>

@@ -18,7 +18,7 @@ module.exports = (express, app) => {
     router.delete("/deletePostByPostID/:postID", controller.deletePostByPostID);
 
     // Update a post
-    router.put("/updatePost/:postID/:content/:image", controller.updatePostByPostID);
+    router.put("/updatePost/:postID/:image/:content", controller.updatePostByPostID);
 
     // Add routes to server
     app.use("/api/posts", router);
