@@ -47,6 +47,7 @@ exports.deleteUser = async (req, res) => {
 
 // Update a user's first name
 exports.updateFirstName = async (req, res) => {
+
     const user = await db.user.update({
         first_name: req.params.firstName
     }, {

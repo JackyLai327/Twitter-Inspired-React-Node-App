@@ -24,6 +24,7 @@ export default function WritePost() {
     const handlePostContent = (e) => {
         setPostContent(e);
         setCharacterCount(e.replace(/(<([^>]+)>)/ig, '').length);
+        console.log(e);
     }
 
     const handlePostImage = (e) => {
