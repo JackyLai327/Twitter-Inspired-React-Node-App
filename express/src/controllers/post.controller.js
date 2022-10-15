@@ -10,6 +10,7 @@ exports.allPosts = async (req, res) => {
 
 // Create a post
 exports.createPost = async (req, res) => {
+    console.log(req.body.image);
     const post = await db.post.create({
         username: req.body.username,
         content: req.body.content,

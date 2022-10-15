@@ -24,7 +24,6 @@ export default function WritePost() {
     const handlePostContent = (e) => {
         setPostContent(e);
         setCharacterCount(e.replace(/(<([^>]+)>)/ig, '').length);
-        console.log(e);
     }
 
     const handlePostImage = (e) => {
@@ -47,7 +46,7 @@ export default function WritePost() {
         /* 
         upon submission, determine if post is valid before posting
         param => submission of form event
-        no return, update local storage if post is valid
+        no return, update database if post is valid
         */
         e.preventDefault();
         handleErrorMessage("loading...");
@@ -59,9 +58,8 @@ export default function WritePost() {
                     const post = {
                         username: user.username,
                         content: postContent,
-                        image: reader.result.toString()
+                        image: reader.result
                     }
-                    console.log(reader.result.toString());
                     createPost(post);
                 };
                 reader.onerror = function() {

@@ -92,7 +92,7 @@ export default function Posts(props) {
         no return, update database
         */
         if (newContent !== "" && newContent.length <= 600) {
-            post.content = newContent.replace("/", "%2F").replace(".", "%2E");
+            post.content = newContent.replace("/", "%2F").replace(".", "%2E").replace("/", "%2F");
             console.log(post);
             updatePostByPostID(post);
         } else if(newContent.replace(/<(.|\n)*?>/g, "").trim().length === 0) {
@@ -146,7 +146,7 @@ export default function Posts(props) {
                                 username: postData.username,
                                 profile_picture: postData["user.profile_picture"]
                             },
-                            content: postData.content,
+                            content: postData.content.replace("%2F", "/"),
                             timestamp: postData.updated_timestamp.substring(0, 10) + ", " + postData.updated_timestamp.substring(11, 19),
                             comments: comments
                         };
@@ -199,7 +199,6 @@ export default function Posts(props) {
                             <div>
                                 { 
                                     post.comments.map(comment => {
-                                        console.log(comment);
                                         return (
                                             <div className="d-flex comment" key={comment.comment_id}>
                                                 <div>{comment.username}:</div>
