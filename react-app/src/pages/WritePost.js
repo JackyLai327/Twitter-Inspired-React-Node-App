@@ -51,7 +51,7 @@ export default function WritePost() {
         */
         e.preventDefault();
         handleErrorMessage("loading...");
-        if (postContent !== "" && postContent.length <= 250) {
+        if (postContent !== "" && postContent.length <= 600) {
             if (postImage !== null) {
                 let reader = new FileReader();
                 reader.readAsDataURL(postImage);
@@ -82,8 +82,8 @@ export default function WritePost() {
         } else if(postContent.replace(/<(.|\n)*?>/g, "").trim().length === 0) {
             setErrorMessage("A post cannot be empty.");
             return;
-        } else if (postContent.length > 250) {
-            handleErrorMessage("Post cannot have more than 250 characters.");
+        } else if (postContent.length > 600) {
+            handleErrorMessage("Post cannot have more than 600 characters.");
         }
     }
 
@@ -99,10 +99,11 @@ export default function WritePost() {
                 <br></br>
                 <ReactQuill theme="snow" value={posted ? "" : postContent} onChange={handlePostContent} style={{ height: "180px" }} className="mb-3 mx-3" type="textarea" placeholder="Share your thoughts..." />
                 <br></br>
-                <p className="text-end mx-5 text-secondary py-3">{characterCount}/250 characters</p>
+                <p className="text-end mx-5 text-secondary py-3">{characterCount}/600 characters</p>
 
                 <div className="post-editor-image mx-5 mb-4">
                     <label className="mb-2">Upload an image (Under Construction... 🦺)</label> <br></br>
+                    {/* UNDER CONSTRUCTION BECAUSE AFTER IMAGES GOT TURNED INTO OBJECT URL CORS REJECTS CONNECTION */}
                     <label htmlFor="image" className="btn border-dark me-3 disabled">choose</label>
                     <input id="image" type="file" accept="image/*" onChange={handlePostImage} className={"collapse"}/>
                     <img src={postImage === null || postImage === undefined ? "" : URL.createObjectURL(postImage)} alt="post pic" className={postImage === null || postImage === undefined ? "collapse" : "img-fluid post-image"}></img>

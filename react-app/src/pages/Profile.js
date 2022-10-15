@@ -40,7 +40,6 @@ export default function Profile(props) {
         */
         currentUser.first_name = newName.length > 1 ? newName.split(" ")[0] : newName;
         currentUser.last_name = newName.length > 1 ? newName.split(" ")[1] : newName;
-        console.log(currentUser);
         setUser(currentUser);
         updateUserFirstName(currentUser);
         updateUserLastName(currentUser);

@@ -91,15 +91,15 @@ export default function Posts(props) {
         param => all posts (json), updating post (json)
         no return, update database
         */
-        if (newContent !== "" && newContent.length <= 250) {
+        if (newContent !== "" && newContent.length <= 600) {
             post.content = newContent.replace("/", "%2F").replace(".", "%2E");
             console.log(post);
             updatePostByPostID(post);
         } else if(newContent.replace(/<(.|\n)*?>/g, "").trim().length === 0) {
             setErrorMessage("A post cannot be empty.");
             return;
-        } else if (newContent.length > 250) {
-            setErrorMessage("Post cannot have more than 250 characters.")
+        } else if (newContent.length > 600) {
+            setErrorMessage("Post cannot have more than 600 characters.")
         }
         handleEditing();
         setErrorMessage("");
@@ -166,7 +166,7 @@ export default function Posts(props) {
                             <div className={editing ? "post-editing" : "collapse"}>
                                 <div className="text-center pt-3 h5">Editing your post...</div>
                                 <ReactQuill theme="snow" value={newContent} onChange={handleNewContent} style={{ height: "180px" }} className="mb-3 mx-3" placeholder={editingPost.replace(/(<([^>]+)>)/ig, '')} preserveWhitespace />
-                                <p className="text-end text-secondary mx-4">{characterCount}/250</p>
+                                <p className="text-end text-secondary mx-4">{characterCount}/600</p>
                                 <br></br>
                                 <p className={errorMessage !== "" ? "text-danger mx-4" : "collapse"} >{errorMessage}</p>
                                 <button className="btn mx-4 mb-3 btn-dark" onClick={() => updatePost(posts, postData)}>Submit</button>
