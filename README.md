@@ -24,7 +24,13 @@
     cd react-app
     npm start
     ```
-6. Enjoy the project.
+6. Open a new tab in terminal and type the following:
+    ```
+    cd <path-to-the-unzipped-folder>
+    cd express
+    node server.js
+    ```
+7. Enjoy the project.
 ## How to run unit testing
 1. Open a new terminal/command pallet (or a new tab).
 2. Type the following and hit enter:
